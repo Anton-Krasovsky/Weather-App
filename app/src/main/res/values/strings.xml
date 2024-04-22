@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Weather Retrofit practice</string>
+    <string name="location">Location</string>
+    <string name="days">Date</string>
+    <string name="temperature">Temperature</string>
+    <string name="find_out_the_weather">Find out the weather</string>
+    <string name="location_hint">Location</string>
+</resources>
