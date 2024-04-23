@@ -1,4 +1,4 @@
-package by.tigertosh.weatherretrofitpractice
+package by.tigertosh.weatherretrofitpractice.retrofit
 
 import by.tigertosh.weatherretrofitpractice.data.WeatherData
 import retrofit2.http.GET

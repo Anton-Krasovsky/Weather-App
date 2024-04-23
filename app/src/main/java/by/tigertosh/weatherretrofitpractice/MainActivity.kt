@@ -8,9 +8,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import by.tigertosh.weatherretrofitpractice.databinding.ActivityMainBinding
+import by.tigertosh.weatherretrofitpractice.retrofit.MainApi
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -30,47 +32,44 @@ class MainActivity : AppCompatActivity() {
         initRetrofit()
 
         binding.button.setOnClickListener {
-            initWeather()
-
-        }
-    }
-
-
-    private fun initWeather() {
-        CoroutineScope(Dispatchers.IO).launch {
-            hideKeyboard()
-            city = binding.city.text.toString()
-            if (city == "") {
-                runOnUiThread {
-                    Toast.makeText(
-                        this@MainActivity, "Enter the city",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } else {
-                val model = mainApi.getWeather(
-                    "ec3b165bc5cb40bd9cf100502241904",
-                    city,
-                    "1",
-                    "no",
-                    "no"
-                )
-
-                runOnUiThread {
-                    binding.tempC.visibility = View.VISIBLE
-                    binding.tempC.text = buildString {
-                        append(model.current.temp_c)
-                        append("C degrees")
+            CoroutineScope(Dispatchers.IO).launch {
+                hideKeyboard()
+                city = binding.city.text.toString()
+                if (city == "") {
+                    runOnUiThread {
+                        toast()
                     }
-                    binding.days.visibility = View.VISIBLE
-                    binding.days.text = model.location.localtime
-                    Picasso.get().load("https:${model.current.condition.icon}")
-                        .into(binding.icWeather)
+                } else {
+                    val model = mainApi.getWeather(
+                        "ec3b165bc5cb40bd9cf100502241904",
+                        city,
+                        "1",
+                        "no",
+                        "no"
+                    )
+
+                    runOnUiThread {
+                        binding.progressBar.visibility = View.VISIBLE
+                        Picasso.get().load("https:${model.current.condition.icon}")
+                            .into(binding.icWeather)
+                    }
+                    delay(1500)
+
+                    runOnUiThread {
+                        binding.tempC.text = buildString {
+                            append(model.current.temp_c)
+                            append("C degrees")
+                        }
+                        binding.days.text = model.location.localtime
+                        binding.progressBar.visibility = View.INVISIBLE
+                        binding.days.visibility = View.VISIBLE
+                        binding.tempC.visibility = View.VISIBLE
+                        binding.icWeather.visibility = View.VISIBLE
+                    }
                 }
             }
         }
     }
-
 
     private fun initRetrofit() {
 
@@ -94,4 +93,10 @@ class MainActivity : AppCompatActivity() {
         } else
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
+
+    private fun toast() = Toast.makeText(
+        this@MainActivity, "Enter the city",
+        Toast.LENGTH_SHORT
+    ).show()
+
 }
